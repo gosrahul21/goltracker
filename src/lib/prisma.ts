@@ -1,11 +1,13 @@
 import { PrismaClient } from '@prisma/client';
-import Database from 'better-sqlite3';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// Initialize better-sqlite3 with the database file
-const adapter = new PrismaBetterSqlite3({ url: './dev.db' });
+// Setup the driver adapter
+const connectionString = process.env.DATABASE_URL;
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
 
 export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter });
 
