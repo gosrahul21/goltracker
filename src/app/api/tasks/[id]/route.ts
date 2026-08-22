@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
-import { scheduleTaskTimer, cancelTaskTimer } from '@/lib/scheduler/memoryScheduler';
+import { inngest } from '@/inngest/client';
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
@@ -53,14 +53,25 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       }
     });
 
-    // In-memory scheduler logic
+    // Inngest Scheduler Logic
     if (task.status === 'InProgress') {
       const telegramId = task.phase.goal.user.telegramId;
       if (telegramId) {
-        scheduleTaskTimer(task, telegramId);
+        await inngest.send({
+          name: 'task/started',
+          data: {
+            taskId: task.id,
+            telegramId,
+            title: task.title,
+            estimatedMinutes: task.estimatedMinutes
+          }
+        });
       }
-    } else if (task.status === 'Paused' || task.status === 'Done') {
-      cancelTaskTimer(task.id);
+    } else if (task.status === 'Done') {
+      await inngest.send({ name: 'task/completed', data: { taskId: task.id } });
+    } else {
+      // For 'Todo', 'Paused', or any other non-InProgress status, cancel the timer
+      await inngest.send({ name: 'task/paused', data: { taskId: task.id } });
     }
 
     return NextResponse.json(task, { status: 200 });

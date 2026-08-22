@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
+import { inngest } from '@/inngest/client';
 
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
@@ -21,6 +22,12 @@ export async function PATCH(req: Request) {
     const user = await prisma.user.update({
       where: { username: session.user.name },
       data: dataToUpdate,
+    });
+
+    // Trigger Inngest to schedule/reschedule daily briefs
+    await inngest.send({
+      name: "user/settings.updated",
+      data: { username: session.user.name }
     });
 
     return NextResponse.json(user, { status: 200 });

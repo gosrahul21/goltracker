@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendTelegramMessage } from '@/lib/telegram';
-import { scheduleTaskTimer, cancelTaskTimer } from '@/lib/scheduler/memoryScheduler';
+import { inngest } from '@/inngest/client';
 
 export async function POST(req: Request) {
   try {
@@ -32,11 +32,15 @@ export async function POST(req: Request) {
             }
           });
 
-          // Reschedule the timer in memory
-          scheduleTaskTimer(
-            { id: updatedTask.id, title: updatedTask.title, estimatedMinutes: updatedTask.estimatedMinutes, startedAt: updatedTask.startedAt },
-            chatId
-          );
+          await inngest.send({
+            name: 'task/started',
+            data: {
+              taskId: updatedTask.id,
+              telegramId: chatId,
+              title: updatedTask.title,
+              estimatedMinutes: updatedTask.estimatedMinutes
+            }
+          });
 
           await sendTelegramMessage(chatId, `✅ Added ${mins} minutes to "${task.title}". The timer has been reset!`);
         }
@@ -51,8 +55,7 @@ export async function POST(req: Request) {
             data: { status: 'Done' }
           });
 
-          // Cancel the timer in memory
-          cancelTaskTimer(taskId);
+          await inngest.send({ name: 'task/completed', data: { taskId } });
 
           await sendTelegramMessage(chatId, `🎉 Awesome job! "${task.title}" is marked as Done.`);
         }
