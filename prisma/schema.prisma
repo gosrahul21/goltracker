@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id                String   @id @default(cuid())
+  username          String   @unique
+  password          String
+  telegramId        String?  // To link user to their Telegram chat
+  morningBriefTime  String   @default("08:00")
+  eveningReviewTime String   @default("20:00")
+  goals             Goal[]
+}
+
+model Goal {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  reason      String?
+  priority    String   @default("Medium") // High, Medium, Low
+  status      String   @default("Planning")
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  phases      Phase[]
+  createdAt   DateTime @default(now())
+}
+
+model Phase {
+  id          String   @id @default(cuid())
+  title       String
+  sequence    Int
+  goalId      String
+  goal        Goal     @relation(fields: [goalId], references: [id])
+  tasks       Task[]
+}
+
+model Task {
+  id                String        @id @default(cuid())
+  title             String
+  description       String?
+  estimatedMinutes  Int
+  status            String        @default("Todo") // Todo, InProgress, Done
+  startedAt         DateTime?
+  lastNotifiedAt    DateTime?
+  phaseId           String
+  phase             Phase         @relation(fields: [phaseId], references: [id])
+  comments          TaskComment[]
+}
+
+model TaskComment {
+  id        String   @id @default(cuid())
+  text      String
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
