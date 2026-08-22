@@ -35,7 +35,7 @@ export async function runEveningReview() {
       const inProgressTasks: any[] = [];
       for (const goal of user.goals) {
         for (const phase of goal.phases) {
-          inProgressTasks.push(...phase.tasks.filter(t => t.status === 'InProgress'));
+          inProgressTasks.push(...phase.tasks.filter((t: any) => t.status === 'InProgress'));
         }
       }
 

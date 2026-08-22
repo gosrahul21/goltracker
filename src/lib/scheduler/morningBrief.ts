@@ -35,7 +35,7 @@ export async function runMorningBrief() {
 
       for (const goal of user.goals) {
         text += `🎯 <b>${goal.title}</b>\n`;
-        const activePhase = goal.phases.find(p => p.tasks.length > 0);
+        const activePhase = goal.phases.find((p: any) => p.tasks.length > 0);
         if (activePhase) {
           text += `Current Phase: <i>${activePhase.title}</i>\n`;
           text += `Next Task: ${activePhase.tasks[0].title} (${activePhase.tasks[0].estimatedMinutes}m)\n\n`;

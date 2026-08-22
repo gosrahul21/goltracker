@@ -30,9 +30,9 @@ export default async function Home() {
   });
 
   const goals = userWithGoals?.goals || [];
-  const totalTasks = goals.flatMap(g => g.phases.flatMap(p => p.tasks)).length;
-  const doneTasks = goals.flatMap(g => g.phases.flatMap(p => p.tasks)).filter(t => t.status === 'Done').length;
-  const activeGoals = goals.filter(g => g.status === 'Active').length;
+  const totalTasks = goals.flatMap((g: any) => g.phases.flatMap((p: any) => p.tasks)).length;
+  const doneTasks = goals.flatMap((g: any) => g.phases.flatMap((p: any) => p.tasks)).filter((t: any) => t.status === 'Done').length;
+  const activeGoals = goals.filter((g: any) => g.status === 'Active').length;
 
   return (
     <div>
