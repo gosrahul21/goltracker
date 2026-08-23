@@ -17,7 +17,7 @@ export async function sendTelegramMessage(chatId: string, text: string, replyMar
   if (replyMarkup) {
     body.reply_markup = replyMarkup;
   }
-
+ 
   try {
     const response = await fetch(url, {
       method: 'POST',

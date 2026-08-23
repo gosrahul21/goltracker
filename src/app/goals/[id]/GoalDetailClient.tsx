@@ -38,6 +38,7 @@ export default function GoalDetailClient({ initialGoal }: { initialGoal: any }) 
   // Phase Creation State
   const [newPhaseTitle, setNewPhaseTitle] = useState("");
   const [newPhaseSequence, setNewPhaseSequence] = useState(goal.phases.length + 1);
+  const [isAddingPhase, setIsAddingPhase] = useState(false);
 
   // Task Creation State
   const [taskPhaseId, setTaskPhaseId] = useState<string | null>(null);
@@ -95,6 +96,7 @@ export default function GoalDetailClient({ initialGoal }: { initialGoal: any }) 
     if (res.ok) {
       setNewPhaseTitle("");
       setNewPhaseSequence((prev: number) => prev + 1);
+      setIsAddingPhase(false);
       router.refresh();
     }
   };
@@ -264,8 +266,8 @@ export default function GoalDetailClient({ initialGoal }: { initialGoal: any }) 
         )}
       </div>
 
-      {/* Phases and Tasks + Add Phase side by side */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: '1.75rem', alignItems: 'start' }}>
+      {/* Phases and Tasks + Add Phase */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
 
         {/* Phases & Tasks */}
         <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.1s' }}>
@@ -346,39 +348,53 @@ export default function GoalDetailClient({ initialGoal }: { initialGoal: any }) 
         </div>
 
         {/* Add New Phase */}
-        <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          <h2 className="section-title" style={{ marginBottom: '1.25rem' }}>
-            <span className="section-title-icon">➕</span>
-            Add Phase
-          </h2>
-          <form onSubmit={handleCreatePhase} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div className="form-group">
-              <label className="label">Phase Title</label>
-              <input
-                type="text"
-                className="input-field"
-                value={newPhaseTitle}
-                onChange={e => setNewPhaseTitle(e.target.value)}
-                placeholder="e.g., Initial Research"
-                required
-              />
+        {isAddingPhase ? (
+          <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h2 className="section-title">
+                <span className="section-title-icon">➕</span>
+                Add Phase
+              </h2>
+              <button className="btn-ghost" onClick={() => setIsAddingPhase(false)} style={{ padding: '0.4rem 0.9rem' }}>✕ Cancel</button>
             </div>
-            <div className="form-group">
-              <label className="label">Order</label>
-              <input
-                type="number"
-                className="input-field"
-                value={newPhaseSequence}
-                onChange={e => setNewPhaseSequence(parseInt(e.target.value))}
-                min={1}
-                required
-              />
-            </div>
-            <button type="submit" className="btn-primary">
-              Add Phase
-            </button>
-          </form>
-        </div>
+            <form onSubmit={handleCreatePhase} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div className="form-group">
+                <label className="label">Phase Title</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={newPhaseTitle}
+                  onChange={e => setNewPhaseTitle(e.target.value)}
+                  placeholder="e.g., Initial Research"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="label">Order</label>
+                <input
+                  type="number"
+                  className="input-field"
+                  value={newPhaseSequence}
+                  onChange={e => setNewPhaseSequence(parseInt(e.target.value))}
+                  min={1}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn-primary" style={{ justifyContent: 'center' }}>
+                Add Phase
+              </button>
+            </form>
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsAddingPhase(true)}
+            style={{ width: '100%', padding: '1.25rem', background: 'transparent', border: '1px dashed var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-muted)', fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s ease', textAlign: 'center', fontWeight: 500 }}
+            onMouseEnter={e => { (e.target as HTMLButtonElement).style.borderColor = 'var(--accent)'; (e.target as HTMLButtonElement).style.color = 'var(--accent)'; }}
+            onMouseLeave={e => { (e.target as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.target as HTMLButtonElement).style.color = 'var(--text-muted)'; }}
+          >
+            + Add New Phase
+          </button>
+        )}
       </div>
 
       {/* Task Modal */}
