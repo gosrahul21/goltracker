@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 function getTaskIndicatorClass(status: string) {
@@ -22,8 +22,7 @@ function getStatusBadgeClass(status: string) {
   }
 }
 
-export default function GoalDetailClient({ initialGoal }: { initialGoal: any }) {
-  const [goal] = useState(initialGoal);
+export default function GoalDetailClient({ initialGoal: goal }: { initialGoal: any }) {
   const router = useRouter();
 
   // Goal Edit State
@@ -31,6 +30,13 @@ export default function GoalDetailClient({ initialGoal }: { initialGoal: any }) 
   const [reason, setReason] = useState(goal.reason || "");
   const [status, setStatus] = useState(goal.status);
   const [priority, setPriority] = useState(goal.priority);
+
+  useEffect(() => {
+    setDescription(goal.description || "");
+    setReason(goal.reason || "");
+    setStatus(goal.status);
+    setPriority(goal.priority);
+  }, [goal]);
   const [isSavingGoal, setIsSavingGoal] = useState(false);
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");

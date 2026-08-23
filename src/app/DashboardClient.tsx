@@ -106,8 +106,7 @@ function GoalCard({ goal, onTaskStatusChange }: { goal: any; onTaskStatusChange:
   );
 }
 
-export default function DashboardClient({ initialGoals, userId }: { initialGoals: any[]; userId: string }) {
-  const [goals] = useState(initialGoals);
+export default function DashboardClient({ initialGoals: goals, userId }: { initialGoals: any[]; userId: string }) {
   const [newGoalTitle, setNewGoalTitle] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
