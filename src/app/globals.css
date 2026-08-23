@@ -419,6 +419,7 @@ button {
   border-radius: var(--radius-sm);
   transition: background 0.2s ease;
   cursor: pointer;
+  flex-wrap: wrap;
 }
 
 .task-row:hover {
@@ -439,6 +440,7 @@ button {
 
 .task-row-title {
   flex: 1;
+  min-width: 140px;
   font-size: 0.875rem;
   font-weight: 500;
 }
